@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -5,16 +6,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from database import engine, Base
-import models  # noqa: F401 — ensure models are registered before create_all
+import models  # noqa: F401
 from routers import aircraft, sb
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="SB Compliance Tool", version="1.0.0")
 
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", frontend_url],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
